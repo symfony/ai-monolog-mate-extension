@@ -4,6 +4,7 @@ CHANGELOG
 0.13
 ----
 
+ * Mark the entries returned by `monolog-search`, `monolog-context-search` and `monolog-tail` as untrusted data, since log messages and their context are frequently controlled by end users
  * Allow `ai_mate_monolog.log_dir` to be a map of context name to log directory. Log entries and files then carry a `kernel_context` field, and `monolog-search`, `monolog-context-search`, `monolog-tail`, `monolog-list-files` and `monolog-list-channels` accept an optional `kernelContext` filter parameter
 
 0.7
