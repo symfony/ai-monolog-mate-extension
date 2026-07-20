@@ -11,13 +11,13 @@
 
 namespace Symfony\AI\Mate\Bridge\Monolog\Capability;
 
-use Mcp\Capability\Attribute\McpTool;
+use Symfony\AI\Mate\Attribute\MateTool;
 use Symfony\AI\Mate\Bridge\Monolog\Model\SearchCriteria;
 use Symfony\AI\Mate\Bridge\Monolog\Service\LogReader;
 use Symfony\AI\Mate\Encoding\ResponseEncoder;
 
 /**
- * MCP tools for searching and analyzing Monolog log files.
+ * Tools for searching and analyzing Monolog log files.
  *
  * @author Johannes Wachter <johannes@sulu.io>
  */
@@ -39,7 +39,7 @@ final class LogSearchTool
      * @param int         $limit         Maximum number of entries to return
      * @param string|null $kernelContext Filter by kernel context (e.g. the APP_ID of a multi-kernel application), only relevant when multiple log directories are configured
      */
-    #[McpTool(name: 'monolog-search', title: 'Log Search', description: 'Search log entries by text or regex pattern. Supports filtering by log level, channel, environment, and date range. Use empty string for term to match all entries when using filters only. When multiple kernel contexts are configured, entries carry a kernel_context field and can be narrowed with the kernelContext parameter.')]
+    #[MateTool(name: 'monolog-search', title: 'Log Search', description: 'Search log entries by text or regex pattern. Supports filtering by log level, channel, environment, and date range. Use empty string for term to match all entries when using filters only. When multiple kernel contexts are configured, entries carry a kernel_context field and can be narrowed with the kernelContext parameter.')]
     public function search(
         string $term,
         bool $regex = false,
@@ -87,7 +87,7 @@ final class LogSearchTool
      * @param int         $limit         Maximum number of entries to return
      * @param string|null $kernelContext Filter by kernel context (e.g. the APP_ID of a multi-kernel application), only relevant when multiple log directories are configured
      */
-    #[McpTool(name: 'monolog-context-search', title: 'Log Context Search', description: 'Search log entries by structured context data. Finds entries where a specific context key contains the given value.')]
+    #[MateTool(name: 'monolog-context-search', title: 'Log Context Search', description: 'Search log entries by structured context data. Finds entries where a specific context key contains the given value.')]
     public function searchContext(
         string $key,
         string $value,
@@ -113,7 +113,7 @@ final class LogSearchTool
      * @param string|null $channel       Filter by Monolog channel name (e.g. app, security, doctrine)
      * @param string|null $kernelContext Filter by kernel context (e.g. the APP_ID of a multi-kernel application), only relevant when multiple log directories are configured
      */
-    #[McpTool(name: 'monolog-tail', title: 'Log Tail', description: 'Get the most recent log entries. Reads from the end of log files, optionally filtered by level, environment, and channel. When multiple kernel contexts are configured, the most recent entries of every context are merged.')]
+    #[MateTool(name: 'monolog-tail', title: 'Log Tail', description: 'Get the most recent log entries. Reads from the end of log files, optionally filtered by level, environment, and channel. When multiple kernel contexts are configured, the most recent entries of every context are merged.')]
     public function tail(int $lines = 50, ?string $level = null, ?string $environment = null, ?string $channel = null, ?string $kernelContext = null): string
     {
         $entries = $this->reader->tail($lines, $level, $environment, $channel, $kernelContext);
@@ -125,7 +125,7 @@ final class LogSearchTool
      * @param string|null $environment   Filter log files by Symfony environment (e.g. dev, prod, test)
      * @param string|null $kernelContext Filter by kernel context (e.g. the APP_ID of a multi-kernel application), only relevant when multiple log directories are configured
      */
-    #[McpTool(name: 'monolog-list-files', title: 'List Log Files', description: 'List available log files with metadata (name, path, size, last modified). Use to discover which logs exist before searching. When multiple kernel contexts are configured, files carry a kernel_context field.')]
+    #[MateTool(name: 'monolog-list-files', title: 'List Log Files', description: 'List available log files with metadata (name, path, size, last modified). Use to discover which logs exist before searching. When multiple kernel contexts are configured, files carry a kernel_context field.')]
     public function listFiles(?string $environment = null, ?string $kernelContext = null): string
     {
         $files = null !== $environment
@@ -155,7 +155,7 @@ final class LogSearchTool
     /**
      * @param string|null $kernelContext Filter by kernel context (e.g. the APP_ID of a multi-kernel application), only relevant when multiple log directories are configured
      */
-    #[McpTool(name: 'monolog-list-channels', title: 'List Log Channels', description: 'List all unique Monolog channel names found across log files (e.g. app, security, doctrine).')]
+    #[MateTool(name: 'monolog-list-channels', title: 'List Log Channels', description: 'List all unique Monolog channel names found across log files (e.g. app, security, doctrine).')]
     public function listChannels(?string $kernelContext = null): string
     {
         return ResponseEncoder::encode(['channels' => $this->reader->getUniqueChannels($kernelContext)]);

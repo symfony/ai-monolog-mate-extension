@@ -5,7 +5,6 @@
     "type": "symfony-ai-mate",
     "keywords": [
         "ai",
-        "mcp",
         "monolog",
         "logs",
         "bridge",
