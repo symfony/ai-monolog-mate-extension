@@ -172,7 +172,7 @@ final class LogSearchToolTest extends TestCase
 
     public function testListFiles()
     {
-        $result = Toon::decode($this->tool->listFiles());
+        $result = $this->decodeUntrusted($this->tool->listFiles());
 
         $this->assertArrayHasKey('files', $result);
         $this->assertNotEmpty($result['files']);
@@ -187,7 +187,7 @@ final class LogSearchToolTest extends TestCase
 
     public function testListChannels()
     {
-        $result = Toon::decode($this->tool->listChannels());
+        $result = $this->decodeUntrusted($this->tool->listChannels());
 
         $this->assertArrayHasKey('channels', $result);
         $this->assertNotEmpty($result['channels']);
@@ -277,7 +277,7 @@ final class LogSearchToolTest extends TestCase
     {
         $tool = $this->createMultiKernelTool();
 
-        $result = Toon::decode($tool->listFiles(kernelContext: 'admin'));
+        $result = $this->decodeUntrusted($tool->listFiles(kernelContext: 'admin'));
 
         $this->assertCount(2, $result['files']);
         foreach ($result['files'] as $file) {
@@ -289,7 +289,7 @@ final class LogSearchToolTest extends TestCase
     {
         $tool = $this->createMultiKernelTool();
 
-        $result = Toon::decode($tool->listChannels('admin'));
+        $result = $this->decodeUntrusted($tool->listChannels('admin'));
 
         $this->assertContains('test', $result['channels']);
         $this->assertNotContains('security', $result['channels']);
