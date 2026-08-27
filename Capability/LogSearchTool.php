@@ -107,16 +107,16 @@ final class LogSearchTool
     }
 
     /**
-     * @param int         $lines         Number of most recent log entries to return
+     * @param int         $limit         Number of most recent log entries to return
      * @param string|null $level         Filter by log level: DEBUG, INFO, NOTICE, WARNING, ERROR, CRITICAL, ALERT, EMERGENCY
      * @param string|null $environment   Filter by Symfony environment (e.g. dev, prod, test)
      * @param string|null $channel       Filter by Monolog channel name (e.g. app, security, doctrine)
      * @param string|null $kernelContext Filter by kernel context (e.g. the APP_ID of a multi-kernel application), only relevant when multiple log directories are configured
      */
     #[MateTool(name: 'monolog-tail', title: 'Log Tail', description: 'Get the most recent log entries. Reads from the end of log files, optionally filtered by level, environment, and channel. When multiple kernel contexts are configured, the most recent entries of every context are merged.')]
-    public function tail(int $lines = 50, ?string $level = null, ?string $environment = null, ?string $channel = null, ?string $kernelContext = null): string
+    public function tail(int $limit = 50, ?string $level = null, ?string $environment = null, ?string $channel = null, ?string $kernelContext = null): string
     {
-        $entries = $this->reader->tail($lines, $level, $environment, $channel, $kernelContext);
+        $entries = $this->reader->tail($limit, $level, $environment, $channel, $kernelContext);
 
         return ResponseEncoder::encodeUntrusted(['entries' => array_values(array_map(static fn ($entry) => $entry->toArray(), $entries))]);
     }

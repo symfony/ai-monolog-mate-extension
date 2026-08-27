@@ -152,7 +152,7 @@ final class LogReader
      *
      * @return LogEntry[]
      */
-    public function tail(int $lines = 50, ?string $level = null, ?string $environment = null, ?string $channel = null, ?string $kernelContext = null): array
+    public function tail(int $limit = 50, ?string $level = null, ?string $environment = null, ?string $channel = null, ?string $kernelContext = null): array
     {
         $entriesPerContext = [];
 
@@ -171,7 +171,7 @@ final class LogReader
                 continue;
             }
 
-            $entriesPerContext[] = $this->tailFromFile($file, $lines, $level, $channel);
+            $entriesPerContext[] = $this->tailFromFile($file, $limit, $level, $channel);
         }
 
         if ([] === $entriesPerContext) {
@@ -185,7 +185,7 @@ final class LogReader
         $entries = array_merge(...$entriesPerContext);
         usort($entries, static fn (LogEntry $a, LogEntry $b) => $a->getDatetime() <=> $b->getDatetime());
 
-        return \array_slice($entries, -$lines);
+        return \array_slice($entries, -$limit);
     }
 
     /**
@@ -218,7 +218,7 @@ final class LogReader
     /**
      * @return LogEntry[]
      */
-    private function tailFromFile(string $file, int $lines, ?string $level = null, ?string $channel = null): array
+    private function tailFromFile(string $file, int $limit, ?string $level = null, ?string $channel = null): array
     {
         $handle = fopen($file, 'r');
         if (false === $handle) {
@@ -235,14 +235,14 @@ final class LogReader
                 ++$lineNumber;
                 $buffer[] = ['line' => $line, 'number' => $lineNumber];
 
-                // Keep buffer size at 2x the requested lines to account for filtered entries
-                if (\count($buffer) > $lines * 2) {
+                // Keep buffer size at 2x the requested limit to account for filtered entries
+                if (\count($buffer) > $limit * 2) {
                     array_shift($buffer);
                 }
             }
 
             $entries = [];
-            for ($i = \count($buffer) - 1; $i >= 0 && \count($entries) < $lines; --$i) {
+            for ($i = \count($buffer) - 1; $i >= 0 && \count($entries) < $limit; --$i) {
                 $entry = $this->parser->parse($buffer[$i]['line'], $relativePath, $buffer[$i]['number'], $fileContext);
                 if (null === $entry) {
                     continue;
