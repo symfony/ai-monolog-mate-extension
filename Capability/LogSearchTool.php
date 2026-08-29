@@ -149,7 +149,7 @@ final class LogSearchTool
             $result[] = $entry;
         }
 
-        return ResponseEncoder::encode(['files' => $result]);
+        return ResponseEncoder::encodeUntrusted(['files' => $result]);
     }
 
     /**
@@ -158,7 +158,7 @@ final class LogSearchTool
     #[MateTool(name: 'monolog-list-channels', title: 'List Log Channels', description: 'List all unique Monolog channel names found across log files (e.g. app, security, doctrine).')]
     public function listChannels(?string $kernelContext = null): string
     {
-        return ResponseEncoder::encode(['channels' => $this->reader->getUniqueChannels($kernelContext)]);
+        return ResponseEncoder::encodeUntrusted(['channels' => $this->reader->getUniqueChannels($kernelContext)]);
     }
 
     /**
