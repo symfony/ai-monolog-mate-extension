@@ -11,6 +11,7 @@
 
 namespace Symfony\AI\Mate\Bridge\Monolog\Tests\Service;
 
+use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\TestCase;
 use Symfony\AI\Mate\Bridge\Monolog\Model\SearchCriteria;
 use Symfony\AI\Mate\Bridge\Monolog\Service\LogParser;
@@ -252,6 +253,38 @@ final class LogReaderTest extends TestCase
             $this->assertCount(1, $entries);
             $this->assertNull($entries[0]->getKernelContext());
             $this->assertSame('dev.log', $entries[0]->getSourceFile());
+        } finally {
+            $this->removeDirectory($tempDir);
+        }
+    }
+
+    /**
+     * @return iterable<string, array{string}>
+     */
+    public static function provideMtimeTieRotatedNames(): iterable
+    {
+        yield 'numeric suffix' => ['app.1.log'];
+        yield 'date suffix' => ['app-2024-01-01.log'];
+    }
+
+    #[DataProvider('provideMtimeTieRotatedNames')]
+    public function testGetLogFilesIsDeterministicOnMtimeTie(string $rotated)
+    {
+        $tempDir = sys_get_temp_dir().'/mate-log-reader-test-'.uniqid();
+        mkdir($tempDir, 0755, true);
+
+        try {
+            $tie = time();
+
+            // glob() already lists both names alphabetically before any sort runs, and the
+            // rotated name is always the lexically smaller one, so this reproduces the tie
+            // with the "wrong" file first regardless of the order touch() runs in here.
+            touch($tempDir.'/'.$rotated, $tie);
+            touch($tempDir.'/app.log', $tie);
+
+            $reader = new LogReader(new LogParser(), $tempDir);
+
+            $this->assertSame($tempDir.'/app.log', $reader->getLogFiles()[0]);
         } finally {
             $this->removeDirectory($tempDir);
         }
